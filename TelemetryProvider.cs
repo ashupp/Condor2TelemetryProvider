@@ -1,15 +1,11 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.IO.MemoryMappedFiles;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using ILogger = SimFeedback.log.ILogger;
-using System.Web.Script.Serialization;
 
 namespace SimFeedback.telemetry
 {
@@ -28,10 +24,8 @@ namespace SimFeedback.telemetry
             Version = "0.0.1.0";
             BannerImage = @"img\banner_condor2.png";
             IconImage = @"img\icon_condor2.png";
-            TelemetryUpdateFrequency = 100;
+            TelemetryUpdateFrequency = 60;
         }
-
-        private static float Rad2Deg(float v) { return (float)(v * 180 / Math.PI); }
 
         public override string Name => "condor2";
 
@@ -39,7 +33,6 @@ namespace SimFeedback.telemetry
         {
             base.Init(logger);
             Log("Initializing Condor2TelemetryProvider");
-
         }
 
         public override string[] GetValueList()
@@ -66,21 +59,11 @@ namespace SimFeedback.telemetry
             }
         }
 
-        private byte[] ReadBuffer(Stream memoryMappedViewStream, int size)
-        {
-            using (BinaryReader binaryReader = new BinaryReader(memoryMappedViewStream))
-                return binaryReader.ReadBytes(size);
-        }
-
-
         private void Run()
         {
             TelemetryData lastTelemetryData = new TelemetryData();
 
-
-            UdpClient socket = new UdpClient();
-            socket.ExclusiveAddressUse = false;
-            //socket.Client.Bind(new IPEndPoint(IPAddress.Any, _portNum));
+            UdpClient socket = new UdpClient {ExclusiveAddressUse = false};
             socket.Client.Bind(new IPEndPoint(IPAddress.Parse(_ipAddr),_portNum));
             var endpoint = new IPEndPoint(IPAddress.Parse(_ipAddr), _portNum);
             Stopwatch sw = new Stopwatch();
@@ -98,43 +81,24 @@ namespace SimFeedback.telemetry
                         {
                             IsRunning = false;
                             IsConnected = false;
-                            //Thread.Sleep(1000);
-                        }
-                        else
-                        {
-                            Thread.Sleep(1);
+                            Thread.Sleep(1000);
                         }
                         continue;
                     }
-                    else
-                    {
-                        IsConnected = true;
-                    }
+                    IsConnected = true;
 
-                    // DCS approach....
-                    // Byte[] received = socket.Receive(ref _senderIP);
-                    // string resp = Encoding.UTF8.GetString(received);
-                    //LogDebug(resp);
-
-                    //KK Approach
-                    Byte[] received = socket.Receive(ref endpoint);
+                        Byte[] received = socket.Receive(ref endpoint);
                     string resp = Encoding.UTF8.GetString(received);
                     TelemetryData telemetryData = ParseReponse(resp);
 
                     IsRunning = true;
 
-                    //TODO
                     TelemetryEventArgs args = new TelemetryEventArgs(
                         new Condor2TelemetryInfo(telemetryData, lastTelemetryData));
                     RaiseEvent(OnTelemetryUpdate, args);
                     lastTelemetryData = telemetryData;
 
                     sw.Restart();
-
-
-
-
-                    Thread.Sleep(SamplePeriod);
                 }
                 catch (Exception e)
                 {
@@ -153,10 +117,7 @@ namespace SimFeedback.telemetry
         {
             TelemetryData telemetryData = new TelemetryData();
 
-            //Log("incoming data: " + resp);
-            //File.AppendAllText("testlog.txt", "inc:" + resp);
-
-            string[] lines = resp.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            string[] lines = resp.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
             if (lines.Length >= 29)
             {
