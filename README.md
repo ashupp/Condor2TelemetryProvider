@@ -14,9 +14,12 @@ I am not responsible of any damages caused by usage of this plugin!
 ## Requirements
 - UDP output of condor enabled. See:  
 https://www.condorsoaring.com/manual_en/#simkits-and-udp-outputs  
+- In Udp.ini set SendIntervalMs=1
+- Use Default Port 55287 and IP 127.0.0.1
 
 ## Installation
-- Do not click on Download on this page. Download the file from the release tab.
+- Do not click on Download on this page. Download the file from the release tab or use the following link:
+  - [latest Condor2Telemetry.zip](https://github.com/ashupp/Condor2TelemetryProvider/releases/latest/download/Condor2Telemetry.zip)
 - Download zip archive, put it into your SimFeedbackFolder root and Extract there.  
 - As the directorys should match, each file should be put automatically in the right place.  
 
