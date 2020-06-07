@@ -87,7 +87,7 @@ namespace SimFeedback.telemetry
                     }
                     IsConnected = true;
 
-                        Byte[] received = socket.Receive(ref endpoint);
+                    Byte[] received = socket.Receive(ref endpoint);
                     string resp = Encoding.UTF8.GetString(received);
                     TelemetryData telemetryData = ParseReponse(resp);
 
@@ -123,12 +123,14 @@ namespace SimFeedback.telemetry
             {
                 telemetryData.Time = float.Parse(lines[0].Split('=')[1], CultureInfo.InvariantCulture);
                 telemetryData.AirSpeed = float.Parse(lines[1].Split('=')[1], CultureInfo.InvariantCulture);
+                telemetryData.TurnRate = float.Parse(lines[9].Split('=')[1], CultureInfo.InvariantCulture);
+                telemetryData.YawStringAngle = float.Parse(lines[10].Split('=')[1], CultureInfo.InvariantCulture);
                 telemetryData.Yaw = float.Parse(lines[12].Split('=')[1], CultureInfo.InvariantCulture);
                 telemetryData.Pitch = float.Parse(lines[13].Split('=')[1], CultureInfo.InvariantCulture);
                 telemetryData.Roll = float.Parse(lines[14].Split('=')[1], CultureInfo.InvariantCulture);
-                telemetryData.Surge = float.Parse(lines[19].Split('=')[1], CultureInfo.InvariantCulture);
-                telemetryData.Sway = float.Parse(lines[20].Split('=')[1], CultureInfo.InvariantCulture);
-                telemetryData.Heave = float.Parse(lines[21].Split('=')[1], CultureInfo.InvariantCulture);
+                telemetryData.Surge = float.Parse(lines[19].Split('=')[1], CultureInfo.InvariantCulture);   // ax
+                telemetryData.Sway = float.Parse(lines[20].Split('=')[1], CultureInfo.InvariantCulture);    // ay
+                telemetryData.Heave = float.Parse(lines[21].Split('=')[1], CultureInfo.InvariantCulture);   // az
                 telemetryData.RollRate = float.Parse(lines[25].Split('=')[1], CultureInfo.InvariantCulture);
                 telemetryData.PitchRate = float.Parse(lines[26].Split('=')[1], CultureInfo.InvariantCulture);
                 telemetryData.YawRate = float.Parse(lines[27].Split('=')[1], CultureInfo.InvariantCulture);

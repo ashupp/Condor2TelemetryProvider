@@ -127,7 +127,7 @@ namespace SimFeedback.telemetry
 
         public float Pitch
         {
-            get => ConvertRadiansToDegrees(pitch);
+            get => LoopAngle(ConvertRadiansToDegrees(pitch),90);
             set => pitch = value;
         }
 
@@ -139,7 +139,7 @@ namespace SimFeedback.telemetry
 
         public float Roll
         {
-            get => ConvertRadiansToDegrees(bank);
+            get => LoopAngle(ConvertRadiansToDegrees(bank),90);
             set => bank = value;
         }
 
@@ -179,6 +179,36 @@ namespace SimFeedback.telemetry
             get => ConvertRadiansToDegrees(yawrate);
             set => yawrate = value;
         }
+
+        public float TurnRate
+        {
+            get => ConvertRadiansToDegrees(turnrate);
+            set => turnrate = value;
+        }
+
+        public float YawStringAngle
+        {
+            get => ConvertRadiansToDegrees(yawstringangle);
+            set => yawstringangle = value;
+        }
+
+        public float PitchAlternative
+        {
+            get => (float)Math.Sin(pitch);
+            set => pitch = value;
+        }
+
+        public float RollAlternative
+        {
+            get => (float)(Math.Cos(pitch) * Math.Sin(bank));
+            set => pitch = value;
+        }
+
+        public float YawAlternative
+        {
+            get => (float)Math.Sin(yaw);
+            set => yaw = value;
+        }
         #endregion
 
         #region Conversion calculations
@@ -191,6 +221,25 @@ namespace SimFeedback.telemetry
         private static float ConvertAccel(float accel)
         {
             return (float) (accel / 9.80665);
+        }
+
+        private float LoopAngle(float angle, float minMag)
+        {
+
+            float absAngle = Math.Abs(angle);
+
+            if (absAngle <= minMag)
+            {
+                return angle;
+            }
+
+            float direction = angle / absAngle;
+
+            //(180.0f * 1) - 135 = 45
+            //(180.0f *-1) - -135 = -45
+            float loopedAngle = (180.0f * direction) - angle;
+
+            return loopedAngle;
         }
         #endregion
     }
