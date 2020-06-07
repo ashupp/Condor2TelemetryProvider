@@ -89,6 +89,7 @@ namespace SimFeedback.telemetry
         private float nettovario;           // netto variometer value			m/s
         private float integrator;           // integrator value					m/s
         private float compass;              // compass reading					degrees
+        private float slipball;             // slip ball deflection angle       rad
         private float turnrate;             // turn indicator reading			rad/s
         private float yawstringangle;       // yawstring angle					rad
         private float radiofrequency;       // radio frequency					MHz
@@ -192,6 +193,12 @@ namespace SimFeedback.telemetry
             set => yawstringangle = value;
         }
 
+        public float SlipBall
+        {
+            get => ConvertRadiansToDegrees(slipball);
+            set => slipball = value;
+        }
+
         public float PitchAlternative
         {
             get => (float)Math.Sin(pitch);
@@ -209,6 +216,11 @@ namespace SimFeedback.telemetry
             get => (float)Math.Sin(yaw);
             set => yaw = value;
         }
+
+        public float SpeedX { get; set; }
+        public float SpeedY { get; set; }
+        public float SpeedZ { get; set; }
+
         #endregion
 
         #region Conversion calculations
