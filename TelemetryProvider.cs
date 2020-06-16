@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using ILogger = SimFeedback.log.ILogger;
@@ -21,7 +22,7 @@ namespace SimFeedback.telemetry
         public TelemetryProvider()
         {
             Author = "ashupp / ashnet GmbH";
-            Version = "0.0.1.0";
+            Version = Assembly.LoadFrom(Assembly.GetExecutingAssembly().Location).GetName().Version.ToString();
             BannerImage = @"img\banner_condor2.png";
             IconImage = @"img\icon_condor2.png";
             TelemetryUpdateFrequency = 60;
@@ -129,8 +130,8 @@ namespace SimFeedback.telemetry
                 telemetryData.Yaw = float.Parse(lines[12].Split('=')[1], CultureInfo.InvariantCulture);
                 telemetryData.Pitch = float.Parse(lines[13].Split('=')[1], CultureInfo.InvariantCulture);
                 telemetryData.Roll = float.Parse(lines[14].Split('=')[1], CultureInfo.InvariantCulture);
-                telemetryData.Surge = float.Parse(lines[19].Split('=')[1], CultureInfo.InvariantCulture);       // ax
-                telemetryData.Sway = float.Parse(lines[20].Split('=')[1], CultureInfo.InvariantCulture);        // ay
+                telemetryData.Sway = float.Parse(lines[19].Split('=')[1], CultureInfo.InvariantCulture);        // ax
+                telemetryData.Surge = float.Parse(lines[20].Split('=')[1], CultureInfo.InvariantCulture);       // ay
                 telemetryData.Heave = float.Parse(lines[21].Split('=')[1], CultureInfo.InvariantCulture);       // az
                 telemetryData.SpeedX = float.Parse(lines[22].Split('=')[1], CultureInfo.InvariantCulture);      // vx
                 telemetryData.SpeedY = float.Parse(lines[23].Split('=')[1], CultureInfo.InvariantCulture);      // vy
