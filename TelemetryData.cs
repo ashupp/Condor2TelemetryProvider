@@ -217,9 +217,28 @@ namespace SimFeedback.telemetry
             set => yaw = value;
         }
 
+        public float SurgeAlternative { get; set; }
+
         public float SpeedX { get; set; }
         public float SpeedY { get; set; }
         public float SpeedZ { get; set; }
+        public float Altitude { get; set; }
+        public float Vario { get; set; }
+        public float Evario { get; set; }
+        public float Nettovario { get; set; }
+        public float Integrator { get; set; }
+        public float Compass { get; set; }
+        public float Radiofrequency { get; set; }
+        public float Quaternionx { get; set; }
+        public float Quaterniony { get; set; }
+        public float Quaternionz { get; set; }
+        public float Quaternionw { get; set; }
+        public float Gforce { get; set; }
+        public float Height { get; set; }
+        public float Wheelheight { get; set; }
+        public float Turbulencestrength { get; set; }
+        public float Surfaceroughness { get; set; }
+        public long ElapsedMilliseconds { get; set; }
 
         #endregion
 

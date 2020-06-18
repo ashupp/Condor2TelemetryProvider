@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net;
@@ -17,7 +19,8 @@ namespace SimFeedback.telemetry
         private const string _ipAddr = "127.0.0.1";
         private bool _isStopped = true;
         private Thread _t;
-
+        private TelemetryData lastTelemetryData;
+        private Stopwatch swData;
 
         public TelemetryProvider()
         {
@@ -62,14 +65,15 @@ namespace SimFeedback.telemetry
 
         private void Run()
         {
-            TelemetryData lastTelemetryData = new TelemetryData();
+            lastTelemetryData = new TelemetryData();
 
             UdpClient socket = new UdpClient {ExclusiveAddressUse = false};
             socket.Client.Bind(new IPEndPoint(IPAddress.Parse(_ipAddr),_portNum));
             var endpoint = new IPEndPoint(IPAddress.Parse(_ipAddr), _portNum);
             Stopwatch sw = new Stopwatch();
+            swData = new Stopwatch();
             sw.Start();
-
+            swData.Start();
             while (!_isStopped)
             {
                 try
@@ -87,18 +91,17 @@ namespace SimFeedback.telemetry
                         continue;
                     }
                     IsConnected = true;
-
+                    IsRunning = true;
                     Byte[] received = socket.Receive(ref endpoint);
                     string resp = Encoding.UTF8.GetString(received);
                     TelemetryData telemetryData = ParseReponse(resp);
 
-                    IsRunning = true;
 
                     TelemetryEventArgs args = new TelemetryEventArgs(
                         new Condor2TelemetryInfo(telemetryData, lastTelemetryData));
                     RaiseEvent(OnTelemetryUpdate, args);
                     lastTelemetryData = telemetryData;
-
+                    //Thread.Sleep(SamplePeriod);
                     sw.Restart();
                 }
                 catch (Exception e)
@@ -109,7 +112,8 @@ namespace SimFeedback.telemetry
                     Thread.Sleep(1000);
                 }
             }
-
+            sw.Stop();
+            swData.Stop();
             IsConnected = false;
             IsRunning = false;
         }
@@ -120,25 +124,61 @@ namespace SimFeedback.telemetry
 
             string[] lines = resp.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
-            if (lines.Length >= 29)
+            if (lines.Length >= 5)
             {
-                telemetryData.Time = float.Parse(lines[0].Split('=')[1], CultureInfo.InvariantCulture);
-                telemetryData.AirSpeed = float.Parse(lines[1].Split('=')[1], CultureInfo.InvariantCulture);
-                telemetryData.SlipBall = float.Parse(lines[8].Split('=')[1], CultureInfo.InvariantCulture);
-                telemetryData.TurnRate = float.Parse(lines[9].Split('=')[1], CultureInfo.InvariantCulture);
-                telemetryData.YawStringAngle = float.Parse(lines[10].Split('=')[1], CultureInfo.InvariantCulture);
-                telemetryData.Yaw = float.Parse(lines[12].Split('=')[1], CultureInfo.InvariantCulture);
-                telemetryData.Pitch = float.Parse(lines[13].Split('=')[1], CultureInfo.InvariantCulture);
-                telemetryData.Roll = float.Parse(lines[14].Split('=')[1], CultureInfo.InvariantCulture);
-                telemetryData.Sway = float.Parse(lines[19].Split('=')[1], CultureInfo.InvariantCulture);        // ax
-                telemetryData.Surge = float.Parse(lines[20].Split('=')[1], CultureInfo.InvariantCulture);       // ay
-                telemetryData.Heave = float.Parse(lines[21].Split('=')[1], CultureInfo.InvariantCulture);       // az
-                telemetryData.SpeedX = float.Parse(lines[22].Split('=')[1], CultureInfo.InvariantCulture);      // vx
-                telemetryData.SpeedY = float.Parse(lines[23].Split('=')[1], CultureInfo.InvariantCulture);      // vy
-                telemetryData.SpeedZ = float.Parse(lines[24].Split('=')[1], CultureInfo.InvariantCulture);      // vz
-                telemetryData.RollRate = float.Parse(lines[25].Split('=')[1], CultureInfo.InvariantCulture);
-                telemetryData.PitchRate = float.Parse(lines[26].Split('=')[1], CultureInfo.InvariantCulture);
-                telemetryData.YawRate = float.Parse(lines[27].Split('=')[1], CultureInfo.InvariantCulture);
+
+
+                var dict = new Dictionary<string, float>();
+                // Todo: Einlesen in dictionary
+                foreach (var line  in lines)
+                {
+                    var tmpLineItems = line.Split('=');
+                    if(tmpLineItems.Length == 2)
+                        dict.Add(tmpLineItems[0], float.Parse(tmpLineItems[1], CultureInfo.InvariantCulture));
+                }
+
+                if (dict.ContainsKey("time")) telemetryData.Time = dict["time"];
+                if (dict.ContainsKey("airspeed")) telemetryData.AirSpeed = dict["airspeed"];
+                if (dict.ContainsKey("altitude")) telemetryData.Altitude = dict["altitude"];
+                if (dict.ContainsKey("vario")) telemetryData.Vario = dict["vario"];
+                if (dict.ContainsKey("evario")) telemetryData.Evario = dict["evario"];
+                if (dict.ContainsKey("nettovario")) telemetryData.Nettovario = dict["nettovario"];
+                if (dict.ContainsKey("integrator")) telemetryData.Integrator = dict["integrator"];
+                if (dict.ContainsKey("compass")) telemetryData.Compass = dict["compass"];
+                if (dict.ContainsKey("slipball")) telemetryData.SlipBall = dict["slipball"];
+                if (dict.ContainsKey("turnrate")) telemetryData.TurnRate = dict["turnrate"];
+                if (dict.ContainsKey("yawstringangle")) telemetryData.YawStringAngle = dict["yawstringangle"];
+                if (dict.ContainsKey("radiofrequency")) telemetryData.Radiofrequency = dict["radiofrequency"];
+                if (dict.ContainsKey("yaw")) telemetryData.Yaw = dict["yaw"];
+                if (dict.ContainsKey("pitch")) telemetryData.Pitch = dict["pitch"];
+                if (dict.ContainsKey("bank")) telemetryData.Roll = dict["bank"];
+                if (dict.ContainsKey("quaternionx")) telemetryData.Quaternionx = dict["quaternionx"];
+                if (dict.ContainsKey("quaterniony")) telemetryData.Quaterniony = dict["quaterniony"];
+                if (dict.ContainsKey("quaternionz")) telemetryData.Quaternionz = dict["quaternionz"];
+                if (dict.ContainsKey("quaternionw")) telemetryData.Quaternionw = dict["quaternionw"];
+                if (dict.ContainsKey("ax")) telemetryData.Surge = dict["ax"];
+                if (dict.ContainsKey("ay")) telemetryData.Sway = dict["ay"];
+                if (dict.ContainsKey("az")) telemetryData.Heave = dict["az"];
+                if (dict.ContainsKey("vx")) telemetryData.SpeedX = dict["vx"];
+                if (dict.ContainsKey("vy")) telemetryData.SpeedY = dict["vy"];
+                if (dict.ContainsKey("vz")) telemetryData.SpeedZ = dict["vz"];
+                if (dict.ContainsKey("rollrate")) telemetryData.RollRate = dict["rollrate"];
+                if (dict.ContainsKey("pitchrate")) telemetryData.PitchRate = dict["pitchrate"];
+                if (dict.ContainsKey("yawrate")) telemetryData.YawRate = dict["yawrate"];
+                if (dict.ContainsKey("gforce")) telemetryData.Gforce = dict["gforce"];
+                if (dict.ContainsKey("height")) telemetryData.Height = dict["height"];
+                if (dict.ContainsKey("wheelheight")) telemetryData.Wheelheight = dict["wheelheight"];
+                if (dict.ContainsKey("turbulencestrength")) telemetryData.Turbulencestrength = dict["turbulencestrength"];
+                if (dict.ContainsKey("surfaceroughness")) telemetryData.Surfaceroughness = dict["surfaceroughness"];
+                //if (dict.ContainsKey("hudmessages")) telemetryData.Hudmessages = dict["hudmessages"];
+
+
+                // Surge alternative calculation
+                if (dict.ContainsKey("ax") && dict.ContainsKey("airspeed") && dict.ContainsKey("time"))
+                {
+                    telemetryData.ElapsedMilliseconds = swData.ElapsedMilliseconds;
+                    telemetryData.SurgeAlternative = ((dict["airspeed"] - lastTelemetryData.AirSpeed) / (telemetryData.ElapsedMilliseconds - lastTelemetryData.ElapsedMilliseconds) * 100) ;
+                }
             }
 
             return telemetryData;

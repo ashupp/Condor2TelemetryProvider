@@ -61,13 +61,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="NLog.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="packages.config" />
-    <None Include="SimFeedbackTelemetryProvider.licenseheader" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="lib\" />
   </ItemGroup>
   <ItemGroup>
