@@ -79,196 +79,202 @@ namespace SimFeedback.telemetry
             gforce=1.38097426699328
          */
 
-        // Note: all values are floats with ‘.’ as decimal separator
+        // Note: all values are doubles with ‘.’ as decimal separator
         // * available only if ExtendedData1=1 in UDP.ini
-        private float time;                 // in-game display time				decimal hours
-        private float airspeed;             // was documented wrong...
-        private float altitude;             // altimeter reading				m or ft according to units selected
-        private float vario;                // pneumatic variometer reading		m/s
-        private float evario;               // electronic variometer reading    m/s
-        private float nettovario;           // netto variometer value			m/s
-        private float integrator;           // integrator value					m/s
-        private float compass;              // compass reading					degrees
-        private float slipball;             // slip ball deflection angle       rad
-        private float turnrate;             // turn indicator reading			rad/s
-        private float yawstringangle;       // yawstring angle					rad
-        private float radiofrequency;       // radio frequency					MHz
-        private float yaw;                  // yaw								rad
-        private float pitch;                // pitch						    rad
-        private float bank;                 // bank								rad
-        private float quaternionx;          // quaternion x						
-        private float quaterniony;          // quaternion y						
-        private float quaternionz;          // quaternion z						
-        private float ax;                   // acceleration vector x		    m/s2
-        private float ay;                   // acceleration vector y		    m/s2
-        private float az;                   // acceleration vector z		    m/s2
-        private float vx;                   // speed vector x					m/s
-        private float vy;                   // speed vector y					m/s
-        private float vz;                   // speed vector z					m/s
-        private float rollrate;             // roll rate (local system)			rad/s
-        private float pitchrate;            // pitch rate (local system) y		rad/s
-        private float yawrate;              // yaw rate (local system) z		rad/s
-        private float gforce;               // g forces							
+        private double time;                 // in-game display time				decimal hours
+        private double airspeed;             // was documented wrong...
+        private double altitude;             // altimeter reading				m or ft according to units selected
+        private double vario;                // pneumatic variometer reading		m/s
+        private double evario;               // electronic variometer reading    m/s
+        private double nettovario;           // netto variometer value			m/s
+        private double integrator;           // integrator value					m/s
+        private double compass;              // compass reading					degrees
+        private double slipball;             // slip ball deflection angle       rad
+        private double turnrate;             // turn indicator reading			rad/s
+        private double yawstringangle;       // yawstring angle					rad
+        private double radiofrequency;       // radio frequency					MHz
+        private double yaw;                  // yaw								rad
+        private double pitch;                // pitch						    rad
+        private double bank;                 // bank								rad
+        private double quaternionx;          // quaternion x						
+        private double quaterniony;          // quaternion y						
+        private double quaternionz;          // quaternion z						
+        private double ax;                   // acceleration vector x		    m/s2
+        private double ay;                   // acceleration vector y		    m/s2
+        private double az;                   // acceleration vector z		    m/s2
+        private double vx;                   // speed vector x					m/s
+        private double vy;                   // speed vector y					m/s
+        private double vz;                   // speed vector z					m/s
+        private double rollrate;             // roll rate (local system)			rad/s
+        private double pitchrate;            // pitch rate (local system) y		rad/s
+        private double yawrate;              // yaw rate (local system) z		rad/s
+        private double gforce;               // g forces							
         // Extra Values from here
-        private float height;               // * height of cg above ground		m
-        private float wheelheight;          // * height of wheel above ground	m
-        private float turbulencestrength;   // * turbulence strength				
-        private float surfaceroughness;     // * surface roughness					
-        private float hudmessages;          // * HUD message text separated by ; | flaps ** flaps position index : 0=most negative to MAXFLAPS-1 | MC ** MacCready setting m/s | water ** Water ballast content kg
+        private double height;               // * height of cg above ground		m
+        private double wheelheight;          // * height of wheel above ground	m
+        private double turbulencestrength;   // * turbulence strength				
+        private double surfaceroughness;     // * surface roughness					
+        private double hudmessages;          // * HUD message text separated by ; | flaps ** flaps position index : 0=most negative to MAXFLAPS-1 | MC ** MacCready setting m/s | water ** Water ballast content kg
 
         // Own calculated values bases on upper values
-        private float heave;
-        private float sway;
-        private float surge;
+        private double heave;
+        private double sway;
+        private double surge;
 
         #region For SimFeedback Available Values
-        public float Time { get; set; }
+        public double Time { get; set; }
 
-        public float AirSpeed { get; set; }
+        public double AirSpeed { get; set; }
 
-        public float Pitch
+        public double Pitch
         {
             get => LoopAngle(ConvertRadiansToDegrees(pitch),90);
             set => pitch = value;
         }
 
-        public float Yaw
+        public double Yaw
         {
             get => 180 - ConvertRadiansToDegrees(yaw);
             set => yaw = value;
         }
 
-        public float Roll
+        public double Roll
         {
             get => LoopAngle(ConvertRadiansToDegrees(bank),90);
             set => bank = value;
         }
 
-        public float Heave
+        public double Heave
         {
             get => ConvertAccel(heave);
             set => heave = value;
         }
 
-        public float Sway
+        public double Sway
         {
             get => ConvertAccel(sway);
             set => sway = value;
         }
 
-        public float Surge
+        public double Surge
         {
             get => ConvertAccel(surge);
             set => surge = value;
         }
 
-        public float RollRate
+        public double RollRate
         {
             get => ConvertRadiansToDegrees(rollrate);
             set => rollrate = value;
         }
 
-        public float PitchRate
+        public double PitchRate
         {
             get => ConvertRadiansToDegrees(pitchrate);
             set => pitchrate = value;
 
         }
 
-        public float YawRate
+        public double YawRate
         {
             get => ConvertRadiansToDegrees(yawrate);
             set => yawrate = value;
         }
 
-        public float TurnRate
+        public double TurnRate
         {
             get => ConvertRadiansToDegrees(turnrate);
             set => turnrate = value;
         }
 
-        public float YawStringAngle
+        public double YawStringAngle
         {
             get => ConvertRadiansToDegrees(yawstringangle);
             set => yawstringangle = value;
         }
 
-        public float SlipBall
+        public double SlipBall
         {
             get => ConvertRadiansToDegrees(slipball);
             set => slipball = value;
         }
 
-        public float PitchAlternative
+        public double SlipBallAlternative
         {
-            get => (float)Math.Sin(pitch);
+            get => LoopAngle(ConvertRadiansToDegrees(slipball), 90);
+            set => slipball = value;
+        }
+
+        public double PitchAlternative
+        {
+            get => (double)Math.Sin(pitch);
             set => pitch = value;
         }
 
-        public float RollAlternative
+        public double RollAlternative
         {
-            get => (float)(Math.Cos(pitch) * Math.Sin(bank));
+            get => (double)(Math.Cos(pitch) * Math.Sin(bank));
             set => pitch = value;
         }
 
-        public float YawAlternative
+        public double YawAlternative
         {
-            get => (float)Math.Sin(yaw);
+            get => (double)Math.Sin(yaw);
             set => yaw = value;
         }
 
-        public float SurgeAlternative { get; set; }
+        public double SurgeAlternative { get; set; }
 
-        public float SpeedX { get; set; }
-        public float SpeedY { get; set; }
-        public float SpeedZ { get; set; }
-        public float Altitude { get; set; }
-        public float Vario { get; set; }
-        public float Evario { get; set; }
-        public float Nettovario { get; set; }
-        public float Integrator { get; set; }
-        public float Compass { get; set; }
-        public float Radiofrequency { get; set; }
-        public float Quaternionx { get; set; }
-        public float Quaterniony { get; set; }
-        public float Quaternionz { get; set; }
-        public float Quaternionw { get; set; }
-        public float Gforce { get; set; }
-        public float Height { get; set; }
-        public float Wheelheight { get; set; }
-        public float Turbulencestrength { get; set; }
-        public float Surfaceroughness { get; set; }
+        public double SpeedX { get; set; }
+        public double SpeedY { get; set; }
+        public double SpeedZ { get; set; }
+        public double Altitude { get; set; }
+        public double Vario { get; set; }
+        public double Evario { get; set; }
+        public double Nettovario { get; set; }
+        public double Integrator { get; set; }
+        public double Compass { get; set; }
+        public double Radiofrequency { get; set; }
+        public double Quaternionx { get; set; }
+        public double Quaterniony { get; set; }
+        public double Quaternionz { get; set; }
+        public double Quaternionw { get; set; }
+        public double Gforce { get; set; }
+        public double Height { get; set; }
+        public double Wheelheight { get; set; }
+        public double Turbulencestrength { get; set; }
+        public double Surfaceroughness { get; set; }
         public long ElapsedMilliseconds { get; set; }
 
         #endregion
 
         #region Conversion calculations
-        private static float ConvertRadiansToDegrees(float radians)
+        private static double ConvertRadiansToDegrees(double radians)
         {
-            var degrees = (float)(180 / Math.PI) * radians;
+            var degrees = (double)(180 / Math.PI) * radians;
             return degrees;
         }
 
-        private static float ConvertAccel(float accel)
+        private static double ConvertAccel(double accel)
         {
-            return (float) (accel / 9.80665);
+            return (double) (accel / 9.80665);
         }
 
-        private float LoopAngle(float angle, float minMag)
+        private double LoopAngle(double angle, double minMag)
         {
 
-            float absAngle = Math.Abs(angle);
+            double absAngle = Math.Abs(angle);
 
             if (absAngle <= minMag)
             {
                 return angle;
             }
 
-            float direction = angle / absAngle;
+            double direction = angle / absAngle;
 
             //(180.0f * 1) - 135 = 45
             //(180.0f *-1) - -135 = -45
-            float loopedAngle = (180.0f * direction) - angle;
+            double loopedAngle = (180.0f * direction) - angle;
 
             return loopedAngle;
         }

@@ -7,7 +7,7 @@ namespace SimFeedback.telemetry
     {
         private TelemetryData _telemetryData;
 
-        public Condor2TelemetryInfo(TelemetryData telemetryData, TelemetryData lastTelemetryData)
+        public Condor2TelemetryInfo(TelemetryData telemetryData)
         {
             _telemetryData = telemetryData;
         }
