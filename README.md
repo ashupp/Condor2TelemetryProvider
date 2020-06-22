@@ -14,7 +14,7 @@ I am not responsible of any damages caused by usage of this plugin!
 ## Requirements
 - UDP output of condor enabled. See:  
 https://www.condorsoaring.com/manual_en/#simkits-and-udp-outputs  
-- In Udp.ini set SendIntervalMs=1
+- In Udp.ini set SendIntervalMs=16
 - Use Default Port 55287 and IP 127.0.0.1
 
 ## Installation
